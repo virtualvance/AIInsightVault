@@ -15,6 +15,13 @@ junit = "4.13.2"
 kotlin = "2.3.20"
 kotlinx-coroutines = "1.10.2"
 material3 = "1.10.0-alpha05"
+compose-webview = "1.9.0"
+androidx-room = "2.7.2"
+androidx-sqlite = "2.5.0-alpha13"
+ksp = "2.3.6"
+kotlinx-datetime = "0.6.1"
+androidBuiltInKotlin = "9.1.1"
+material = "1.10.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -35,6 +42,12 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMul
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+compose-webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "compose-webview" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
+androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "androidx-sqlite" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -43,3 +56,6 @@ composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "com
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
+android-built-in1-kotlin = { id = "com.android.built-in-kotlin", version.ref = "androidBuiltInKotlin" }

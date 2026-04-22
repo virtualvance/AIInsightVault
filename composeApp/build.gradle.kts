@@ -3,10 +3,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -15,7 +17,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -25,9 +27,9 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -42,6 +44,10 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.compose.webview)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -54,34 +60,26 @@ kotlin {
 }
 
 android {
+    // This is the unique ID for the library's code
     namespace = "io.github.virtualvance.aiinsightvault"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "io.github.virtualvance.aiinsightvault"
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        // REMOVED: targetSdk, versionCode, and versionName.
+        // These belong in your new 'androidapp' module!
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-}
-
-dependencies {
-    debugImplementation(libs.compose.uiTooling)
 }
 
 compose.desktop {
@@ -94,4 +92,19 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    debugImplementation(libs.compose.uiTooling)
+
+    // KSP setup remains the same
+    add("kspCommonMainMetadata", libs.androidx.room.compiler)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
 }
