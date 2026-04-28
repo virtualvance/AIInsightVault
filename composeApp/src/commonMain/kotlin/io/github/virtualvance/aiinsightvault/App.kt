@@ -13,21 +13,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.web.WebContent
 import com.multiplatform.webview.web.WebView
+import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun App() {
-    // Initialize the state with a default URL
+    // Setup the State and the Navigator (The Bridge Controller)
     val webViewState = rememberWebViewState("https://gemini.google.com")
+    val webViewNavigator = rememberWebViewNavigator()
 
-    // Configure Multiplatform Settings
-    // This ensures JS and Storage work on both Android and later on an iPhone
     webViewState.webSettings.apply {
-        isJavaScriptEnabled = true // Enable JS
-        androidWebSettings.domStorageEnabled = true // Keep logged in and also cookies
+        isJavaScriptEnabled = true
+        androidWebSettings.domStorageEnabled = true
     }
+
+    // --- THE CAPTURE SCRIPT ---
+    // Use JSON.stringify to safely package the text so the bridge doesn't choke on raw line breaks.
+    // This turns all the messy formatting into one solid, safe string of text.
+    val captureScript = "JSON.stringify(document.body.innerText);"
 
     MaterialTheme {
         Scaffold(
@@ -37,7 +42,6 @@ fun App() {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("AI Vault", modifier = Modifier.padding(end = 8.dp))
 
-                            // Navigation Buttons
                             Button(onClick = { webViewState.content = WebContent.Url("https://gemini.google.com") }) {
                                 Text("Gemini")
                             }
@@ -52,11 +56,26 @@ fun App() {
                         }
                     }
                 )
+            },
+            floatingActionButton = {
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        // LAUNCH THE SCRIPT
+                        webViewNavigator.evaluateJavaScript(captureScript) { result ->
+                            // COMBINE them into one string so the Logcat filter doesn't hide it!
+                            println("BRIDGE RETURNED WITH DATA: $result")
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ) {
+                    Text("Capture Insight")
+                }
             }
         ) { paddingValues ->
-            // WebView portal
             WebView(
                 state = webViewState,
+                navigator = webViewNavigator, // Attaches the controller to the portal
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
