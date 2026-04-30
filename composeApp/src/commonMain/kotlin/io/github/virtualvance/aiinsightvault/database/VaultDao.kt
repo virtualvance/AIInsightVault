@@ -5,17 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface VaultDao {
-    // --- Session Operations (Preserved) ---
-    @Insert
-    suspend fun insertSession(session: SessionEntity): Long
-
-    @Query("SELECT * FROM sessions ORDER BY createdAt DESC")
-    fun getAllSessions(): Flow<List<SessionEntity>>
-
-    @Delete
-    suspend fun deleteSession(session: SessionEntity)
-
-    // --- NEW Sprint 4 Agnostic Insight Operations ---
+    // --- Agnostic Insight Operations ---
 
     // Upsert logic: Replaces the old entry if the same ID is saved
     @Insert(onConflict = OnConflictStrategy.REPLACE)

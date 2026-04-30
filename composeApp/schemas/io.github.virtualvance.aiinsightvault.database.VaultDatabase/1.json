@@ -2,44 +2,8 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3b186333f790cbc30a7304abb56aff6a",
+    "identityHash": "4618a54e0c6db8d05d03a80cffb1e2f1",
     "entities": [
-      {
-        "tableName": "sessions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `aiProvider` TEXT NOT NULL, `createdAt` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "title",
-            "columnName": "title",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "aiProvider",
-            "columnName": "aiProvider",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "createdAt",
-            "columnName": "createdAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
       {
         "tableName": "insights",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `source` TEXT NOT NULL, `rawContent` TEXT NOT NULL, `summary` TEXT, `tags` TEXT, `timestamp` INTEGER NOT NULL, `isFavorite` INTEGER NOT NULL, PRIMARY KEY(`id`))",
@@ -101,7 +65,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3b186333f790cbc30a7304abb56aff6a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4618a54e0c6db8d05d03a80cffb1e2f1')"
     ]
   }
 }

@@ -55,6 +55,10 @@ dependencies {
     implementation(libs.compose.uiToolingPreview) // Fixed: removed extra dots
     debugImplementation(libs.compose.uiTooling)    // Fixed: removed extra dots
 
+    // Room and SQLite (Needed for platform initialization)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.sqlite.bundled)
+
     // Standard Helpers
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
