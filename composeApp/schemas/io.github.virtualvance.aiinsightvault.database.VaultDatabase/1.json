@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "e7873f370171be2ff399162487748389",
+    "identityHash": "3b186333f790cbc30a7304abb56aff6a",
     "entities": [
       {
         "tableName": "sessions",
@@ -42,31 +42,41 @@
       },
       {
         "tableName": "insights",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sessionId` INTEGER NOT NULL, `promptText` TEXT NOT NULL, `responseText` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `isFavorite` INTEGER NOT NULL, FOREIGN KEY(`sessionId`) REFERENCES `sessions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `source` TEXT NOT NULL, `rawContent` TEXT NOT NULL, `summary` TEXT, `tags` TEXT, `timestamp` INTEGER NOT NULL, `isFavorite` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "sessionId",
-            "columnName": "sessionId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "promptText",
-            "columnName": "promptText",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "responseText",
-            "columnName": "responseText",
+            "fieldPath": "title",
+            "columnName": "title",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rawContent",
+            "columnName": "rawContent",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "summary",
+            "columnName": "summary",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tags",
+            "columnName": "tags",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "timestamp",
@@ -82,40 +92,16 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [
-          {
-            "name": "index_insights_sessionId",
-            "unique": false,
-            "columnNames": [
-              "sessionId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_insights_sessionId` ON `${TABLE_NAME}` (`sessionId`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "sessions",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "sessionId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e7873f370171be2ff399162487748389')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3b186333f790cbc30a7304abb56aff6a')"
     ]
   }
 }

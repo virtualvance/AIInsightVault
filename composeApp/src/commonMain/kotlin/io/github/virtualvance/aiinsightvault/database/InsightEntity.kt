@@ -1,28 +1,19 @@
 package io.github.virtualvance.aiinsightvault.database
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
-import kotlin.time.Clock
+import kotlin.random.Random
 
-@Entity(
-    tableName = "insights",
-    foreignKeys = [
-        ForeignKey(
-            entity = SessionEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["sessionId"],
-            onDelete = ForeignKey.CASCADE // If you delete a session, its insights are deleted too
-        )
-    ],
-    indices = [Index(value = ["sessionId"])] // Makes searching for insights in a session faster
-)
+@Entity(tableName = "insights")
 data class InsightEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val sessionId: Long, // This links the insight to the session
-    val promptText: String,
-    val responseText: String,
-    val timestamp: Long = Clock.System.now().toEpochMilliseconds(),
+    // Generating a random number as our Agnostic ID for the demo
+    @PrimaryKey
+    val id: String = "insight_${Random.nextLong(1000000, 9999999)}",
+    val title: String,
+    val source: String = "Gemini",
+    val rawContent: String,
+    val summary: String? = null,
+    val tags: String? = null,
+    val timestamp: Long = 0L, // Hardcoded to 0 for the demo; we'll fix time later
     val isFavorite: Boolean = false
 )

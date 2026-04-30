@@ -1,15 +1,13 @@
 package io.github.virtualvance.aiinsightvault
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.web.WebContent
 import com.multiplatform.webview.web.WebView
@@ -18,9 +16,7 @@ import com.multiplatform.webview.web.rememberWebViewState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
 fun App() {
-    // Setup the State and the Navigator (The Bridge Controller)
     val webViewState = rememberWebViewState("https://gemini.google.com")
     val webViewNavigator = rememberWebViewNavigator()
 
@@ -29,30 +25,53 @@ fun App() {
         androidWebSettings.domStorageEnabled = true
     }
 
-    // --- THE CAPTURE SCRIPT ---
-    // Use JSON.stringify to safely package the text so the bridge doesn't choke on raw line breaks.
-    // This turns all the messy formatting into one solid, safe string of text.
-    val captureScript = "JSON.stringify(document.body.innerText);"
+    // Slightly refined script: still grabs text, but cleans up extra whitespace
+    val captureScript = "JSON.stringify(document.body.innerText.trim().substring(0, 500) + '...');"
+
+    // --- SPRINT 4 UI STATES ---
+    var showSaveDialog by remember { mutableStateOf(false) }
+    var capturedData by remember { mutableStateOf("") }
+
+    // State for the custom URL testing bar
+    var urlInput by remember { mutableStateOf("https://gemini.google.com") }
 
     MaterialTheme {
         Scaffold(
             topBar = {
                 TopAppBar(
                     title = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
+                        ) {
                             Text("AI Vault", modifier = Modifier.padding(end = 8.dp))
 
-                            Button(onClick = { webViewState.content = WebContent.Url("https://gemini.google.com") }) {
+                            // The Primary Gemini Button
+                            Button(onClick = {
+                                val geminiUrl = "https://gemini.google.com"
+                                webViewState.content = WebContent.Url(geminiUrl)
+                                urlInput = geminiUrl // Keeps the text bar in sync
+                            }) {
                                 Text("Gemini")
                             }
-                            Spacer(Modifier.width(4.dp))
-                            Button(onClick = { webViewState.content = WebContent.Url("https://chatgpt.com") }) {
-                                Text("GPT")
-                            }
-                            Spacer(Modifier.width(4.dp))
-                            Button(onClick = { webViewState.content = WebContent.Url("https://claude.ai") }) {
-                                Text("Claude")
-                            }
+
+                            Spacer(Modifier.width(8.dp))
+
+                            // NEW: The Custom URL Testing Bar
+                            OutlinedTextField(
+                                value = urlInput,
+                                onValueChange = { urlInput = it },
+                                modifier = Modifier.weight(1f).height(52.dp),
+                                singleLine = true,
+                                textStyle = MaterialTheme.typography.bodyMedium,
+                                trailingIcon = {
+                                    TextButton(onClick = {
+                                        webViewState.content = WebContent.Url(urlInput)
+                                    }) {
+                                        Text("Go", style = MaterialTheme.typography.labelSmall)
+                                    }
+                                }
+                            )
                         }
                     }
                 )
@@ -62,24 +81,67 @@ fun App() {
                     onClick = {
                         // LAUNCH THE SCRIPT
                         webViewNavigator.evaluateJavaScript(captureScript) { result ->
-                            // COMBINE them into one string so the Logcat filter doesn't hide it!
-                            println("BRIDGE RETURNED WITH DATA: $result")
+                            // INSTEAD of Logcat, it now goes to the UI
+                            val cleanResult = result?.removeSurrounding("\"")?.replace("\\n", "\n") ?: "No data"
+                            capturedData = cleanResult
+                            showSaveDialog = true // Trigger the Dialog
                         }
                     },
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Text("Capture Insight")
                 }
             }
         ) { paddingValues ->
-            WebView(
-                state = webViewState,
-                navigator = webViewNavigator, // Attaches the controller to the portal
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            )
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                WebView(
+                    state = webViewState,
+                    navigator = webViewNavigator,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                // --- Sprint 4 Dialog ---
+                if (showSaveDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showSaveDialog = false },
+                        title = { Text("Save to Vault") },
+                        text = {
+                            Column(modifier = Modifier.heightIn(max = 350.dp).verticalScroll(rememberScrollState())) {
+                                Text("Secure Vault ID generated.", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelSmall)
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text("Raw Transcript Hook:", fontWeight = FontWeight.Bold)
+                                Text(capturedData, style = MaterialTheme.typography.bodySmall)
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // The LiteRT-LM Placeholder
+                                Surface(
+                                    color = MaterialTheme.colorScheme.secondaryContainer,
+                                    shape = MaterialTheme.shapes.medium,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(modifier = Modifier.padding(8.dp)) {
+                                        Text("LiteRT-LM Processor", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                        Text("Status: Awaiting local Gemma model integration...", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {
+                            Button(onClick = {
+                                // In the next step, this will call VaultDao.insert()
+                                showSaveDialog = false
+                            }) {
+                                Text("Confirm & Save")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showSaveDialog = false }) { Text("Cancel") }
+                        }
+                    )
+                }
+            }
         }
     }
 }
