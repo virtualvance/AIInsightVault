@@ -14,11 +14,11 @@ interface SummarizationService {
 class MockSummarizationService : SummarizationService {
     override suspend fun summarize(text: String): SummarizationResult {
         // Simulate local AI processing delay
-        delay(2000)
+        delay(4000)
         
         return SummarizationResult(
             summary = "This is a mock summary of the captured insight. It highlights the key points of the conversation regarding local AI integration and agnostic persistence.",
-            tags = listOf("Mock", "AI", "Sprint4", "Kotlin")
+            tags = listOf("Mock", "AI", "Sprint4")
         )
     }
 }

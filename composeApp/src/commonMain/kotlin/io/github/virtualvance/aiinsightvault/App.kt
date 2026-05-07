@@ -73,7 +73,7 @@ fun App(vaultDao: VaultDao) {
 
                             Spacer(Modifier.width(8.dp))
 
-                            // NEW: The Custom URL Testing Bar
+                            // The Custom URL Testing Bar
                             OutlinedTextField(
                                 value = urlInput,
                                 onValueChange = { urlInput = it },
