@@ -1,48 +1,67 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop (JVM).
+AI Insight Vault
+AI Insight Vault is a cross-platform application built with Compose Multiplatform designed to capture, organize, and refine AI-generated insights. The project focuses on a provider-agnostic architecture, allowing users to scrape and preserve intellectual threads from any web-based AI interface while maintaining meaningful human control over the data.
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+🚀 Project Vision
+As AI interaction becomes a primary mode of research and development, capturing the "insight" behind the prompt is critical. This application acts as a secure, local repository (Vault) that transforms ephemeral web conversations into structured, searchable data.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+✨ Key Features (Sprint 4 Update)
+Agnostic Web Capture: Utilizes a JavaScript-injected bridge to extract content from any text-based web interface (Gemini, ChatGPT, Claude, etc.) without relying on brittle, provider-specific CSS selectors.
 
-### Build and Run Android Application
+Intelligent Auto-Titling: Automatically generates unique identifiers based on capture timestamps, ensuring immediate data integrity.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+Human-in-the-Loop Refinement: * Editable Titles: Users can rename insights during the capture phase for better organization.
 
-### Build and Run Desktop (JVM) Application
+Interactive Metadata: Suggested tags are presented as interactive chips; users can prune AI-generated tags or append custom metadata on the fly.
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+Decoupled Summarization Pipeline: Implements an interface-driven service layer. The current build utilizes a MockSummarizationService to validate asynchronous UI flows and loading states, ensuring the app is ready for local LLM integration.
 
-### Build and Run iOS Application
+Robust Persistence: Powered by a Room database with a flat, agnostic schema and a custom SQLite driver optimized for multiplatform performance.
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+🏗️ Architecture & Pipeline
+The application follows a "Data Funnel" architecture to ensure data quality:
 
----
+Capture Stage: Raw text extraction via the WebView bridge.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+Processing Stage: Asynchronous summarization and keyword extraction through a decoupled service layer.
+
+Refinement Stage: UI-driven human intervention for title and tag verification.
+
+Persistence Stage: Final commit to the local SQLite vault using the Room DAO pattern.
+
+🛠️ Tech Stack
+Language: Kotlin (100%)
+
+Framework: Compose Multiplatform
+
+UI/UX: Jetpack Compose, Material 3
+
+Database: Room (with Bundled SQLite Driver for KMP)
+
+Concurrency: Kotlin Coroutines
+
+Time: kotlinx-datetime
+
+📂 Project Structure
+commonMain: Core UI logic, the SummarizationService interface, and the InsightEntity definitions.
+
+androidMain: Android-specific entry point and Room database initialization.
+
+database: DAO (Data Access Object) and Database configuration implementing OnConflictStrategy.REPLACE.
+
+service: Service implementations including the MockSummarizationService.
+
+⚙️ Setup & Installation
+Clone the repository.
+
+Open in Android Studio (Panda 4 or newer).
+
+Ensure the Kotlin Multiplatform plugin is installed and updated.
+
+Sync Gradle and run the :composeApp module on an Android Emulator (API 31+ recommended).
+
+🔮 Future Roadmap
+[ ] Phase 4: Integration of LiteRT-LM (Gemma 2b) for local, on-device summarization.
+
+[ ] Phase 5: Implementation of a side panel for data retrieval and filtering, secure login/security integration, and final UI/UX refinement.
+
+Developed as part of my Software Development and Integration, and Applied Artificial Intelligence research tracks at the OU Polytechnic Institute.
